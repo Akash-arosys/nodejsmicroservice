@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "strictPropertyInitialization": false,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "outDir": "./dist",
+    "rootDir": "./",
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["shared/*"],
+      "@config/*": ["shared/config/*"],
+      "@entities/*": ["shared/entities/*"]
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "include": [
+    "shared/**/*",
+    "api-gateway/src/**/*",
+    "services/user-service/src/**/*",
+    "services/test-service/src/**/*",
+    "services/question-service/src/**/*",
+    "services/result-service/src/**/*"
+  ],
+  "exclude": ["node_modules", "dist"]
+}

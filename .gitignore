@@ -1,0 +1,60 @@
+# Node Modules
+node_modules/
+
+# Environment Variables
+.env
+.env.* 
+*.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory
+coverage/
+*.lcov
+
+# Build Output
+dist/
+build/
+tmp/
+temp/
+
+# TypeScript
+*.tsbuildinfo
+
+# IDE Specific Folders
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Optional cache
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+out/
+
+# PM2 logs
+.pms/
+.pm2/
+
+# Docker
+docker-data/

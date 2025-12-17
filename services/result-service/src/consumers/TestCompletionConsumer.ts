@@ -1,6 +1,6 @@
 import { Consumer } from 'kafkajs';
-// import { getConsumer, connectConsumer } from '../../../../shared/config/kafka.js';
-import { ResultService } from '../services/ResultService.js';
+// import { getConsumer, connectConsumer } from '../../../../shared/config/kafka';
+import { ResultService } from '../services/ResultService';
 
 const resultService = new ResultService();
 

@@ -1,8 +1,8 @@
-import { TestRepository } from '../repositories/TestRepository.js';
-import { cacheGetJSON, cacheSetJSON, cacheDelete } from '../../../../shared/config/redis.js';
-import { publishEvent } from '../../../../shared/config/kafka.js';
-import { generateToken } from '../../../../shared/utils/jwt.js';
-import { Test } from '../../../../shared/entities/Test.js';
+import { TestRepository } from '../repositories/TestRepository';
+import { cacheGetJSON, cacheSetJSON, cacheDelete } from '../../../../shared/config/redis';
+import { publishEvent } from '../../../../shared/config/kafka';
+import { generateToken } from '../../../../shared/utils/jwt';
+import { Test } from '../../../../shared/entities/tests/Test';
 
 export class TestService {
   private testRepository: TestRepository;

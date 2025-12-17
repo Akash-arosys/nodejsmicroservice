@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { UserService } from '../services/UserService.js';
+import { UserService } from '../services/UserService';
 
 const userService = new UserService();
 
@@ -7,18 +7,18 @@ export class UserController {
   // Register new user
   async register(req: Request, res: Response): Promise<void> {
     try {
-      const { email, name, password, phoneNumber } = req.body;
+      const { email, first_name,last_name, password, phone } = req.body;
 
       // Validation
-      if (!email || !name || !password) {
+      if (!email || !first_name || !password) {
         res.status(400).json({
           success: false,
-          error: 'Email, name, and password are required',
+          error: 'Email, first_name, and password are required',
         });
         return;
       }
 
-      const result = await userService.registerUser(email, name, password, phoneNumber);
+      const result = await userService.registerUser(email, first_name,password,last_name,  phone,'student');
 
       res.status(201).json({
         success: true,
@@ -36,6 +36,31 @@ export class UserController {
   }
 
   // Login user
+  async checkEmail(req: Request, res: Response): Promise<void> {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        res.status(400).json({
+          success: false,
+          error: 'Email is required',
+        });
+        return;
+      }
+
+      const result = await userService.getUserByEmail(email);
+
+      res.json({
+        success: true,
+        data: result,
+      });
+    } catch (error: any) {
+      res.status(401).json({
+        success: false,
+        error: error.message || 'CheckEmail failed',
+      });
+    }
+  }
   async login(req: Request, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;
@@ -61,6 +86,35 @@ export class UserController {
       res.status(401).json({
         success: false,
         error: error.message || 'Login failed',
+      });
+    }
+  }
+  // Login user
+  async otpVerification(req: Request, res: Response): Promise<void> {
+    try {
+      const { email, otp } = req.body;
+
+      if (!email || !otp) {
+        res.status(400).json({
+          success: false,
+          error: 'Email and otp are required',
+        });
+        return;
+      }
+
+      const result = await userService.otpVerification(email, otp);
+
+      res.json({
+        success: true,
+        data: {
+          user: result.updateddata,
+          token: result.token,
+        },
+      });
+    } catch (error: any) {
+      res.status(401).json({
+        success: false,
+        error: error.message || 'otp verification failed',
       });
     }
   }
@@ -117,41 +171,35 @@ export class UserController {
     }
   }
 
-  // Get user stats
-  async getUserStats(req: Request, res: Response): Promise<void> {
+   async addEmployee(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
-      const stats = await userService.getUserStats(id);
+      const { email, first_name,last_name, password, phone,access_level } = req.body;
 
-      res.json({
+      // Validation
+      if (!email || !first_name || !access_level || !password) {
+        res.status(400).json({
+          success: false,
+          error: 'Email, first_name,access_level and password are required',
+        });
+        return;
+      }
+
+      const result = await userService.registerUser(email,first_name,password,last_name,phone,access_level);
+
+      res.status(201).json({
         success: true,
-        data: stats,
+        data: {
+          user: result.user,
+        },
       });
     } catch (error: any) {
-      res.status(500).json({
+      res.status(400).json({
         success: false,
-        error: error.message || 'Failed to fetch user stats',
+        error: error.message || 'addEmployee failed',
       });
     }
   }
 
-  // Get leaderboard
-  async getLeaderboard(req: Request, res: Response): Promise<void> {
-    try {
-      const limit = parseInt(req.query.limit as string) || 100;
-      const leaderboard = await userService.getLeaderboard(Math.min(limit, 1000));
-
-      res.json({
-        success: true,
-        data: leaderboard,
-      });
-    } catch (error: any) {
-      res.status(500).json({
-        success: false,
-        error: error.message || 'Failed to fetch leaderboard',
-      });
-    }
-  }
 
   // Search users
   async searchUsers(req: Request, res: Response): Promise<void> {
@@ -190,18 +238,17 @@ export class UserController {
   // Change password
   async changePassword(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
-      const { oldPassword, newPassword } = req.body;
+      const {user_id, oldPassword, newPassword } = req.body;
 
-      if (!oldPassword || !newPassword) {
+      if (!user_id || !oldPassword || !newPassword) {
         res.status(400).json({
           success: false,
-          error: 'Old and new passwords are required',
+          error: 'user_id ,Old and new passwords are required',
         });
         return;
       }
 
-      await userService.changePassword(id, oldPassword, newPassword);
+      await userService.changePassword(user_id, oldPassword, newPassword);
 
       res.json({
         success: true,

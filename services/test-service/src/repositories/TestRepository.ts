@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
-import { AppDataSource } from '../../../../shared/config/database.js';
-import { Test } from '../../../../shared/entities/Test.js';
+import { AppDataSource } from '../../../../shared/config/database';
+import { Test } from '../../../../shared/entities/tests/Test';
 
 export class TestRepository {
   private repo: Repository<Test>;

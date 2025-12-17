@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ResultService } from '../services/ResultService.js';
+import { ResultService } from '../services/ResultService';
 
 const resultService = new ResultService();
 

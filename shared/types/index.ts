@@ -4,7 +4,7 @@ export interface IUser {
   email: string;
   name: string;
   status: 'active' | 'inactive' | 'suspended';
-  role: 'student' | 'admin' | 'instructor';
+  access_level: 'student' | 'admin' | 'instructor';
   testsCompleted: number;
   averageScore: number;
   createdAt: Date;

@@ -1,8 +1,8 @@
 import express from 'express';
-import { initializeDatabase } from '../../../shared/config/database.js';
+import { initializeDatabase } from '../../../shared/config/database';
 // import { initializeRedis } from '../../shared/config/redis';
 // import { createTopics } from '../../../shared/config/kafka';
-import questionRoutes from './routes/questionRoutes.js';
+import questionRoutes from './routes/questionRoutes';
 
 const app = express();
 

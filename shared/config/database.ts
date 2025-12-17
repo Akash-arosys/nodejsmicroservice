@@ -1,10 +1,13 @@
 // shared/config/database.ts
 import { DataSource } from 'typeorm';
 import 'dotenv/config';
-import { User } from '../entities/User.js';
-import { Test } from '../entities/Test.js';
-import { Question } from '../entities/Question.js';
-import { TestAttempt } from '../entities/TestAttempt.js';
+import { User } from '../entities/users/User';
+import { Test } from '../entities/tests/Test';
+import { Question } from '../entities/questions/Question';
+import { TestAttempt } from '../entities/tests/TestAttempt';
+import { SubscriptionPlan } from '../entities/users/SubcriptionPlan';
+import { UserPayment } from '../entities/users/UserPayment';
+import { UserSubscriptionPlan } from '../entities/users/UserSubcriptions';
 
 export const AppDataSource = new DataSource({
   type: 'mysql',
@@ -15,7 +18,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME || 'gmat_prep',
   synchronize: true,
   logging: process.env.DB_LOGGING === 'true',
-  entities: [User, Test, Question, TestAttempt],
+  entities: [User, Test, Question, TestAttempt,SubscriptionPlan,UserPayment,UserSubscriptionPlan],
 });
 
 export const initializeDatabase = async () => {

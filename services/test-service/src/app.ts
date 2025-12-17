@@ -1,7 +1,7 @@
 import express from 'express';
-import { initializeDatabase } from '../../../shared/config/database.js';
-// import { initializeRedis } from '../../../shared/config/redis.js';
-import testRoutes from './routes/testRoutes.js';
+import { initializeDatabase } from '../../../shared/config/database';
+// import { initializeRedis } from '../../../shared/config/redis';
+import testRoutes from './routes/testRoutes';
 
 const app = express();
 app.use(express.json());

@@ -1,7 +1,6 @@
 {
   "name": "gmat-backend-shared",
   "version": "1.0.0",
-  "type": "module",
   "description": "GMAT Test Series Microservices",
   "private": true,
   "workspaces": [
@@ -12,11 +11,11 @@
     "result-service"
   ],
   "scripts": {
-    "dev:user": "cd services/user-service && nodemon --watch src --ext ts,js,json --exec \"node --loader ts-node/esm src/app.ts\"",
-    "dev:test": "cd services/test-service && nodemon --watch src --ext ts,js,json --exec \"node --loader ts-node/esm src/app.ts\"",
-    "dev:question": "cd services/question-service && nodemon --watch src --ext ts,js,json --exec \"node --loader ts-node/esm src/app.ts\"",
-    "dev:result": "cd services/result-service && nodemon --watch src --ext ts,js,json --exec \"node --loader ts-node/esm src/app.ts\"",
-    "dev:gateway": "cd api-gateway && nodemon --watch src --ext ts,js,json --exec \"node --loader ts-node/esm src/app.ts\"",
+    "dev:user": "cd services/user-service && ts-node-dev --respawn --transpile-only src/app.ts",
+    "dev:test": "cd services/test-service && ts-node-dev --respawn --transpile-only src/app.ts",
+    "dev:question": "cd services/question-service && ts-node-dev --respawn --transpile-only src/app.ts",
+    "dev:result": "cd services/result-service && ts-node-dev --respawn --transpile-only src/app.ts",
+    "dev:gateway": "cd api-gateway && ts-node-dev --respawn --transpile-only src/app.ts",
     "dev:all": "concurrently \"npm:dev:user\" \"npm:dev:test\" \"npm:dev:question\" \"npm:dev:result\" \"npm:dev:gateway\""
   },
   "dependencies": {
@@ -59,6 +58,7 @@
     "prettier": "^3.7.4",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
   },
   "engines": {

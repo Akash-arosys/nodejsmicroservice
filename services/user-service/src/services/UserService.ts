@@ -1,10 +1,10 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { UserRepository } from '../repositories/UserRepository.js';
-import { cacheGetJSON, cacheSetJSON, cacheDelete } from '../../../../shared/config/redis.js';
-import { publishEvent } from '../../../../shared/config/kafka.js';
-import { generateToken } from '../../../../shared/utils/jwt.js';
-import { User } from '../../../../shared/entities/User.js';
+import { UserRepository } from '../repositories/UserRepository';
+import { cacheGetJSON, cacheSetJSON, cacheDelete } from '../../../../shared/config/redis';
+import { publishEvent } from '../../../../shared/config/kafka';
+import { generateToken } from '../../../../shared/utils/jwt';
+import { User } from '../../../../shared/entities/users/User';
 
 export class UserService {
   private userRepository: UserRepository;
@@ -15,9 +15,11 @@ export class UserService {
 
   async registerUser(
     email: string,
-    name: string,
+    first_name: string,
     password: string,
-    phoneNumber?: string
+    last_name?: string,
+    phone?: string,
+    access_level?: string
   ): Promise<{ user: User; token: string }> {
     // Check if user exists
     const existingUser = await this.userRepository.findByEmail(email);
@@ -31,26 +33,30 @@ export class UserService {
     // Create user
     const user = await this.userRepository.create({
       email,
-      name,
+      first_name,
+      last_name,
       password: hashedPassword,
-      phoneNumber,
-      status: 'active',
-      role: 'student',
+      phone,
+      user_status: 'active',
+      access_level,
     });
-
+    let token = '';
     // Generate JWT token
-    const token = this.generateToken(user.id, user.email, user.name, user.role);
+    if (access_level == 'student') {
+      token = this.generateToken(user.user_id, user.email, user.first_name, user.access_level);
+    }
 
     // Publish event to Kafka
     try {
       await publishEvent('user-events', [
         {
-          key: user.id,
+          key: user.user_id,
           value: JSON.stringify({
             type: 'USER_REGISTERED',
-            userId: user.id,
+            userId: user.user_id,
             email: user.email,
-            name: user.name,
+            name: user.first_name,
+            access_level: user.access_level,
             timestamp: new Date(),
           }),
         },
@@ -59,9 +65,8 @@ export class UserService {
       console.warn('Kafka publish failed (ignored):', (e as any)?.message || e);
     }
 
-
     // Cache user
-    await cacheSetJSON(`user:${user.id}`, user, 3600);
+    await cacheSetJSON(`user:${user.user_id}`, user, 3600);
 
     return { user, token };
   }
@@ -79,25 +84,75 @@ export class UserService {
     }
 
     // Update last login
-    await this.userRepository.updateLastLogin(user.id);
+    await this.userRepository.updateLastLogin(user.user_id);
 
     // Generate token
-    const token = this.generateToken(user.id, user.email, user.name, user.role);
+    const token = this.generateToken(user.user_id, user.email, user.first_name, user.access_level);
 
     // Publish login event
-    // await publishEvent('user-events', [
-    //   {
-    //     key: user.id,
-    //     value: JSON.stringify({
-    //       type: 'USER_LOGIN',
-    //       userId: user.id,
-    //       email: user.email,
-    //       timestamp: new Date(),
-    //     }),
-    //   },
-    // ]);
+    try {
+      await publishEvent('user-events', [
+        {
+          key: user.user_id,
+          value: JSON.stringify({
+            type: 'USER_REGISTERED',
+            userId: user.user_id,
+            email: user.email,
+            name: user.first_name,
+            access_level: user.access_level,
+            timestamp: new Date(),
+          }),
+        },
+      ]);
+    } catch (e) {
+      console.warn('Kafka publish failed (ignored):', (e as any)?.message || e);
+    }
 
     return { user, token };
+  }
+  async getUserByEmail(email: string): Promise<User | null> {
+
+    const user = await this.userRepository.findByEmail(email);
+
+    return user;
+  }
+  async otpVerification(email: string, otp: number): Promise<{ updateddata: User; token: string }> {
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Verify otp
+
+    if (otp != user.email_otp) {
+      throw new Error('Incorrect OTP');
+    }
+
+    // Update last login
+   const updateddata = await this.userRepository.update(user.user_id, { is_email_verified: true, user_last_seen_on: new Date() });
+
+    // Generate token
+    const token = this.generateToken(user.user_id, user.email, user.first_name, user.access_level);
+
+    // Publish login event
+    try {
+      await publishEvent('user-events', [
+        {
+          key: user.user_id,
+          value: JSON.stringify({
+            type: 'USER_REGISTERED',
+            userId: user.user_id,
+            email: user.email,
+            name: user.first_name,
+            access_level: user.access_level,
+            timestamp: new Date(),
+          }),
+        },
+      ]);
+    } catch (e) {
+      console.warn('Kafka publish failed (ignored):', (e as any)?.message || e);
+    }
+    return { updateddata, token };
   }
 
   async getUserById(id: string): Promise<User | null> {
@@ -130,8 +185,8 @@ export class UserService {
     }
 
     // Update test count and average score
-    await this.userRepository.incrementTestCount(userId);
-    await this.userRepository.updateAverageScore(userId, score);
+    // await this.userRepository.incrementTestCount(userId);
+    // await this.userRepository.updateAverageScore(userId, score);
 
     // Clear cache
     await cacheDelete(`user:${userId}`);
@@ -176,39 +231,22 @@ export class UserService {
     return this.userRepository.findAll(limit, offset);
   }
 
-  async getLeaderboard(limit: number = 100) {
-    const leaderboard = await this.userRepository.getLeaderboard(limit);
-    return leaderboard.map((user) => ({
-      id: user.id,
-      name: user.name,
-      averageScore: user.averageScore,
-      testsCompleted: user.testsCompleted,
-      totalScore: user.totalScore,
-    }));
-  }
+  // async getLeaderboard(limit: number = 100) {
+  //   const leaderboard = await this.userRepository.getLeaderboard(limit);
+  //   return leaderboard.map((user) => ({
+  //     id: user.id,
+  //     name: user.name,
+  //     averageScore: user.averageScore,
+  //     testsCompleted: user.testsCompleted,
+  //     totalScore: user.totalScore,
+  //   }));
+  // }
 
   async searchUsers(query: string, limit: number = 10, offset: number = 0) {
     return this.userRepository.search(query, limit, offset);
   }
 
-  async getUserStats(userId: string) {
-    const user = await this.getUserById(userId);
-    if (!user) {
-      throw new Error('User not found');
-    }
 
-    return {
-      userId: user.id,
-      name: user.name,
-      email: user.email,
-      testsCompleted: user.testsCompleted,
-      averageScore: user.averageScore,
-      totalScore: user.totalScore,
-      lastLogin: user.lastLogin,
-      role: user.role,
-      status: user.status,
-    };
-  }
 
   async deleteUser(userId: string): Promise<void> {
     const user = await this.getUserById(userId);
@@ -223,21 +261,25 @@ export class UserService {
       await cacheDelete(`user:${userId}`);
 
       // Publish event
-      await publishEvent('user-events', [
-        {
-          key: userId,
-          value: JSON.stringify({
-            type: 'USER_DELETED',
-            userId,
-            timestamp: new Date(),
-          }),
-        },
-      ]);
+      try {
+        await publishEvent('user-events', [
+          {
+            key: userId,
+            value: JSON.stringify({
+              type: 'USER_DELETED',
+              userId,
+              timestamp: new Date(),
+            }),
+          },
+        ]);
+      } catch (e) {
+        console.warn('Kafka publish failed (ignored):', (e as any)?.message || e);
+      }
     }
   }
 
   // JWT utility
-  private generateToken(userId: string, email: string, name: string, role: string): string {
+  private generateToken(userId: string, email: string, name: string, access_level: string): string {
     const secret = process.env.JWT_SECRET || 'eb97d3c5366dd35a6e3028b6546ef7f03b0aaf7c';
     const expiresIn = process.env.JWT_EXPIRY || '24h';
 
@@ -245,7 +287,7 @@ export class UserService {
       id: userId,
       email: email,
       name: name,
-      role: role,
+      access_level: access_level,
     });
   }
 
@@ -254,4 +296,5 @@ export class UserService {
     const secret = process.env.JWT_SECRET || 'eb97d3c5366dd35a6e3028b6546ef7f03b0aaf7c';
     return jwt.verify(token, secret) as any;
   }
+
 }

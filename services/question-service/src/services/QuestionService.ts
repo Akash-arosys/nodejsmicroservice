@@ -1,7 +1,7 @@
-import { QuestionRepository } from '../repositories/QuestionRepository.js';
+import { QuestionRepository } from '../repositories/QuestionRepository';
 // import { cacheGetJSON, cacheSetJSON, cacheDelete } from '../../../../shared/config/redis';
 // import { publishEvent } from '../../../../shared/config/kafka';
-import { Question } from '../../../../shared/entities/Question.js';
+import { Question } from '../../../../shared/entities/questions/Question';
 
 export class QuestionService {
   private questionRepository: QuestionRepository;

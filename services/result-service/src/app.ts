@@ -1,9 +1,9 @@
 import express from 'express';
-import { initializeDatabase } from '../../../shared/config/database.js';
-// import { initializeRedis } from '../../../../shared/config/redis.js';
-// import { createTopics } from '../../../../shared/config/kafka.js';
-import { TestCompletionConsumer } from './consumers/TestCompletionConsumer.js';
-import resultRoutes from './routes/resultRoutes.js';
+import { initializeDatabase } from '../../../shared/config/database';
+// import { initializeRedis } from '../../../../shared/config/redis';
+// import { createTopics } from '../../../../shared/config/kafka';
+import { TestCompletionConsumer } from './consumers/TestCompletionConsumer';
+import resultRoutes from './routes/resultRoutes';
 
 const app = express();
 app.use(express.json());

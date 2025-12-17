@@ -1,7 +1,6 @@
 {
   "name": "api-gateway",
   "version": "1.0.0",
-  "type": "module",
   "private": true,
   "scripts": {
     "dev": "nodemon --exec ts-node --project tsconfig.json src/app.ts",

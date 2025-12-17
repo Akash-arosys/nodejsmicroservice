@@ -1,7 +1,7 @@
-import { TestAttemptRepository } from '../repositories/TestAttemptRepository.js';
+import { TestAttemptRepository } from '../repositories/TestAttemptRepository';
 // import { cacheGetJSON, cacheSetJSON } from '../../config/redis';
 // import { publishEvent } from '../../config/kafka';
-import { TestAttempt } from '../../../../shared/entities/TestAttempt.js';
+import { TestAttempt } from '../../../../shared/entities/tests/TestAttempt';
 
 export class ResultService {
   private attemptRepository: TestAttemptRepository;

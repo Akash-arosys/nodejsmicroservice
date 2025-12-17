@@ -3,13 +3,9 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 
 const router = Router();
 
-router.use('/users', (req, res, next) => {
-  console.log("Users Proxy Hit:", req.method, req.url);
-  next();
-});
 // Users
 router.use(
-  '/users',
+  '/admin',
   createProxyMiddleware({
     target: 'http://localhost:3001',
     changeOrigin: true,

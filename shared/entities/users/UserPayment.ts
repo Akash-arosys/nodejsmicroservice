@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import { User } from "./User";
 import { UserSubscriptionPlan } from "./UserSubcriptions";
+import { PaymentMethods, PaymentStatusOptions} from "../../constant";
 
 @Entity('user_payment')
 export class UserPayment {
@@ -33,14 +34,21 @@ export class UserPayment {
   @Column('datetime', { nullable: true })
   payment_date?: Date;
 
-  @Column('varchar', { length: 50, nullable: true, comment: 'upi, card, cash, razorpay, stripe' })
-  payment_method?: string;
+ @Column({
+    type: "enum",
+    enum: PaymentMethods
+  })
+  payment_method?: PaymentMethods;
 
   @Column('varchar', { length: 100, nullable: true, comment: 'payment gateway transaction ID' })
   transaction_no?: string;
 
-  @Column('varchar', { length: 30, nullable: true, comment: 'pending, success, failed, refunded' })
-  payment_status?: string;
+ @Column({
+    type: "enum",
+    enum: PaymentStatusOptions,
+    default: PaymentStatusOptions.PENDING,
+  })
+  payment_status!: PaymentStatusOptions;
 
   @ManyToOne(() => User, (user) => user.payments, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'user_id' })

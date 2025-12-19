@@ -12,6 +12,7 @@ import {
 import { User } from "./User";
 import { SubscriptionPlan } from "./SubcriptionPlan";
 import { UserPayment } from "./UserPayment";
+import { SubcriptionStatusOptions } from "../../constant";
 
 @Entity('user_subscription_plan')
 export class UserSubscriptionPlan {
@@ -21,8 +22,8 @@ export class UserSubscriptionPlan {
   @Column('varchar', { length: 100,nullable: true })
   user_id?: string;
 
-  @Column('varchar', { length: 100,nullable: true })
-  plan_id?: string;
+  @Column('int', {nullable: true })
+  plan_id?: Number;
 
   @Column('datetime')
   subscription_plan_purchase_date!: Date;
@@ -36,8 +37,12 @@ export class UserSubscriptionPlan {
   @Column('varchar', { length: 50, nullable: true, comment: 'auto ended, refund' })
   subscription_end_reason?: string;
 
-  @Column('varchar', { length: 20, default: 'active', comment: 'active,expired,cancel,delete' })
-  subscription_status!: 'active' | 'expired' | 'cancel' | 'delete';
+ @Column({
+    type: "enum",
+    enum: SubcriptionStatusOptions,
+    default: SubcriptionStatusOptions.ACTIVE,
+  })
+  subcription_status!: SubcriptionStatusOptions;
 
   @ManyToOne(() => User, (user) => user.subscriptions, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'user_id' })

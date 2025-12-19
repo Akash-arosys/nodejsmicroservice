@@ -1,20 +1,20 @@
 {
-  "name": "gmat-backend-shared",
+  "name": "gmatwise-backend",
   "version": "1.0.0",
   "description": "GMAT Test Series Microservices",
   "private": true,
   "workspaces": [
     "api-gateway",
-    "user-service",
-    "test-service",
-    "question-service",
-    "result-service"
+    "admin-service",
+    "quiz-service",
+    "content-service",
+    "analytics-service"
   ],
   "scripts": {
-    "dev:user": "cd services/user-service && ts-node-dev --respawn --transpile-only src/app.ts",
-    "dev:test": "cd services/test-service && ts-node-dev --respawn --transpile-only src/app.ts",
-    "dev:question": "cd services/question-service && ts-node-dev --respawn --transpile-only src/app.ts",
-    "dev:result": "cd services/result-service && ts-node-dev --respawn --transpile-only src/app.ts",
+    "dev:user": "cd services/admin-service && ts-node-dev --respawn --transpile-only src/app.ts",
+    "dev:test": "cd services/quiz-service && ts-node-dev --respawn --transpile-only src/app.ts",
+    "dev:content": "cd services/content-service && ts-node-dev --respawn --transpile-only src/app.ts",
+    "dev:result": "cd services/analytics-service && ts-node-dev --respawn --transpile-only src/app.ts",
     "dev:gateway": "cd api-gateway && ts-node-dev --respawn --transpile-only src/app.ts",
     "dev:all": "concurrently \"npm:dev:user\" \"npm:dev:test\" \"npm:dev:question\" \"npm:dev:result\" \"npm:dev:gateway\""
   },

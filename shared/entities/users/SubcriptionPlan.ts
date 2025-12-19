@@ -5,13 +5,14 @@ import {
     OneToMany,
 } from "typeorm";
 import { UserSubscriptionPlan } from "./UserSubcriptions";
+import { StatusOptions } from "../../constant";
 
 @Entity('subscription_plan')
 export class SubscriptionPlan {
-    @PrimaryGeneratedColumn('uuid')
-    plan_id!: string;
+    @PrimaryGeneratedColumn({ type: "int" })
+    plan_id!: number;
 
-    @Column('varchar', { length: 50})
+    @Column('varchar', { length: 50 })
     plan_name!: string;
 
     @Column('json', {
@@ -20,7 +21,7 @@ export class SubscriptionPlan {
     })
     accessible_sections_and_modules_json?: any;
 
-    @Column('int', {comment: 'In Months' })
+    @Column('int', { comment: 'In Months' })
     plan_duration!: number;
 
     @Column('decimal', {
@@ -32,8 +33,12 @@ export class SubscriptionPlan {
     @Column('varchar', { length: 255, nullable: true })
     plan_description?: string;
 
-    @Column('varchar', { length: 20, default: 'active', comment: 'active,inactive,delete' })
-    plan_status!: 'active' | 'inactive' | 'delete';
+    @Column({
+        type: "enum",
+        enum: StatusOptions,
+        default: StatusOptions.ACTIVE,
+    })
+    plan_status!: StatusOptions;
 
     @OneToMany(() => UserSubscriptionPlan, (usp) => usp.plan_id)
     userSubscriptions!: UserSubscriptionPlan[];

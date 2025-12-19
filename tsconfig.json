@@ -27,10 +27,10 @@
   "include": [
     "shared/**/*",
     "api-gateway/src/**/*",
-    "services/user-service/src/**/*",
-    "services/test-service/src/**/*",
-    "services/question-service/src/**/*",
-    "services/result-service/src/**/*"
+    "services/admin-service/src/**/*",
+    "services/quiz-service/src/**/*",
+    "services/content-service/src/**/*",
+    "services/analytics-service/src/**/*"
   ],
   "exclude": ["node_modules", "dist"]
 }
